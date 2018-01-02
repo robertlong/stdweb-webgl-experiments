@@ -1,0 +1,8 @@
+[package]
+name = "stdweb-sandbox"
+version = "0.1.0"
+authors = ["Robert Long <robert@robertlong.me>"]
+
+[dependencies]
+stdweb = "0.3.0"
+glenum = "0.1.0"
