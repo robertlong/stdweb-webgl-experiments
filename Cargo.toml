@@ -1,5 +1,5 @@
 [package]
-name = "stdweb-sandbox"
+name = "stdweb-webgl-experiments"
 version = "0.1.0"
 authors = ["Robert Long <robert@robertlong.me>"]
 

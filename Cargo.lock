@@ -44,7 +44,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "stdweb-sandbox"
+name = "stdweb-webgl-experiments"
 version = "0.1.0"
 dependencies = [
  "glenum 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
