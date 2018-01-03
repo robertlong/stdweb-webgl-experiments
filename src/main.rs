@@ -1,17 +1,13 @@
+extern crate glenum;
 #[macro_use]
 extern crate stdweb;
-extern crate glenum;
 
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use glenum::*;
 
-use stdweb::web::{
-    Element,
-    window,
-    document
-};
+use stdweb::web::{document, window, Element};
 
 use stdweb::unstable::TryInto;
 
@@ -22,13 +18,13 @@ pub struct WebGL2RenderingContext {
 impl WebGL2RenderingContext {
     pub fn new(canvas: &Element) -> WebGL2RenderingContext {
         let gl = js! { return (@{canvas}).getContext("webgl2"); };
-        
+
         WebGL2RenderingContext {
             reference: gl.into_reference().unwrap(),
         }
     }
 
-    pub fn clear_color(&self, r:f32, g: f32, b: f32, a: f32) {
+    pub fn clear_color(&self, r: f32, g: f32, b: f32, a: f32) {
         js! {
             (@{&self.reference}).clearColor(@{r},@{g},@{b},@{a});
         }
@@ -43,6 +39,7 @@ impl WebGL2RenderingContext {
 
 pub struct App {
     gl: WebGL2RenderingContext,
+    last_time: i64,
 }
 
 impl App {
@@ -51,6 +48,7 @@ impl App {
 
         App {
             gl: gl,
+            last_time: now(),
         }
     }
 
@@ -58,9 +56,16 @@ impl App {
         self.gl.clear_color(0.0, 0.0, 0.0, 1.0);
     }
 
-    pub fn render(&self) {
-        self.gl.clear_color(rand() as f32, rand() as f32, rand() as f32, 1.0);
-        self.gl.clear(BufferBit::Color);
+    pub fn render(&mut self) {
+        let cur_time = now();
+
+        if cur_time - self.last_time > 1000 {
+            self.gl
+                .clear_color(rand() as f32, rand() as f32, rand() as f32, 1.0);
+            self.gl.clear(BufferBit::Color);
+
+            self.last_time = cur_time;
+        }
     }
 }
 
@@ -68,14 +73,22 @@ fn rand() -> f64 {
     let value = js! {
         return Math.random();
     };
-    
+
+    value.try_into().unwrap()
+}
+
+fn now() -> i64 {
+    let value = js! {
+        return Date.now();
+    };
+
     value.try_into().unwrap()
 }
 
 fn main_loop(app: Rc<RefCell<App>>) {
     app.borrow_mut().render();
 
-    window().request_animation_frame( move |_| {
+    window().request_animation_frame(move |_| {
         main_loop(app);
     });
 }
@@ -87,7 +100,7 @@ fn main() {
 
     app.borrow_mut().init();
 
-    window().request_animation_frame( move |_| {
+    window().request_animation_frame(move |_| {
         main_loop(app);
     });
 
